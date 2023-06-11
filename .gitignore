@@ -1,0 +1,41 @@
+# Unreal Engine Build Files
+Binaries/
+Intermediate/
+Saved/
+
+# Visual Studio Files
+.vs/
+*.sln
+*.suo
+*.vcxproj
+*.vcxproj.filters
+*.vcxproj.user
+
+# Compiled Dynamic Libraries
+*.dll
+*.dylib
+
+# Compiled Static Libraries
+*.lib
+*.a
+
+# macOS Files
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Compiled Object files
+*.o
+*.obj
+
+# Log Files
+*.log
+
+# Generated Files
+DerivedDataCache/
+*.generated.h
+*.generated.cpp
+
+# Other Generated Files
+*.swp
+Thumbs.db

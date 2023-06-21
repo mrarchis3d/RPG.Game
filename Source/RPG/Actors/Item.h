@@ -6,11 +6,8 @@
 #include "GameFramework/Actor.h"
 #include "NiagaraFunctionLibrary.h"
 #include "NiagaraComponent.h"
-#include "RPG/Components/InventoryComponent.h"
+#include "Components/SphereComponent.h"
 #include "Item.generated.h"
-
-
-class USphereComponent;
 
 UCLASS()
 class RPG_API AItem : public AActor
@@ -21,7 +18,7 @@ public:
 	AItem();
 	virtual void Tick(float DeltaTime) override;
 	bool bIsMesh = ItemMesh != nullptr;
-	GUID GetId() {
+	FGuid GetId() {
 		return Id;
 	};
 
@@ -62,6 +59,13 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "FX")
 	UNiagaraSystem* VisibleFX;
 
+	UFUNCTION()
+	virtual void OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+	UFUNCTION()
+	virtual void OnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+
+
 
 private:
 	UFUNCTION(BlueprintPure)
@@ -70,23 +74,20 @@ private:
 	UFUNCTION(BlueprintPure)
 	float TransformedCos();
 	
-	UFUNCTION()
-	virtual void OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
-
-	UFUNCTION()
-	virtual void OnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
-
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	float RunningTime;
-
-	unsigned int Quantity = 0;
 	
-	GUID Id;
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, meta = (AllowPrivateAccess = "true"))
+	int32 Quantity = 0;
+	
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, meta = (AllowPrivateAccess = "true"))
+	FGuid Id;
 
-	UPROPERTY(VisibleAnywhere)
-	USphereComponent* Sphere;
 	template<typename T>
 	T Avg(T First, T Second);
+
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, meta = (AllowPrivateAccess = "true"))
+	USphereComponent* Sphere;
 
 };
 

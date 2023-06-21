@@ -7,18 +7,10 @@
 #include "EnhancedInputSubsystems.h"
 #include "Blueprint/UserWidget.h"
 #include "GameFramework/Character.h"
-#include "RPG/HUD/CharacterActions.h"
 
 void AHeroPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
-
-	CharacterActionsWidget = CreateWidget<UCharacterActions>(GetWorld(), CharacterActionsWidgetClass);
-	if (CharacterActionsWidget)
-	{
-		CharacterActionsWidget->JumpButtonClickedEvent.BindUObject(this, &AHeroPlayerController::Jump);
-		CharacterActionsWidget->AddToViewport();
-	}
 }
 
 void AHeroPlayerController::Move(const FInputActionValue& Value)

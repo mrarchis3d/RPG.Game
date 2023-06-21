@@ -5,7 +5,6 @@
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
 #include "RPG/ConfigUtils/InputConfigData.h"
-#include "RPG/HUD/CharacterActions.h"
 #include "HeroPlayerController.generated.h"
 
 /**
@@ -25,11 +24,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Enhanced Input")
 	UInputConfigData* InputActions;
 	void Move(const FInputActionValue& Value);
-	UPROPERTY(EditDefaultsOnly, Category = "UI")
-	TSubclassOf<UCharacterActions> CharacterActionsWidgetClass; // Clase del UCharacterActions Widget
-	UCharacterActions* CharacterActionsWidget;
 
 public:
+	UFUNCTION(BlueprintCallable)
 	void Jump();
 	// Called to bind functionality to input
 	virtual void SetupInputComponent() override;

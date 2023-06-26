@@ -44,7 +44,7 @@ public:
 	{
 		TSharedRef<IHttpRequest> Request = RequestWithRoute(Subroute, true);
 		Request->SetVerb("POST");
-		Request->SetContentAsString(ContentJsonString);
+		Request->SetContentAsString(TransformJsonToFormData(ContentJsonString));
 		return Request;
 	}
 	void Send(TSharedRef<IHttpRequest>& Request)
@@ -60,5 +60,38 @@ public:
 			return false;
 		}
 		return true;
+	}
+
+	FString TransformJsonToFormData(FString JsonString) const
+	{
+		TSharedPtr<FJsonObject> JsonObject;
+		TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(JsonString);
+
+		if (FJsonSerializer::Deserialize(Reader, JsonObject))
+		{
+			FString FormData;
+			bool bFirstEntry = true;
+
+			for (const auto& Entry : JsonObject->Values)
+			{
+				FString Key = Entry.Key;
+				FString Value = Entry.Value->AsString();
+
+				if (!bFirstEntry)
+				{
+					FormData += "&";
+				}
+
+				FormData += FString::Printf(TEXT("%s=%s"), *Key, *Value);
+				bFirstEntry = false;
+			}
+			printf("FormData Result: %s", *FormData)
+			return FormData;
+		}
+		else
+		{
+			printf("Failed to convert");
+			return "";
+		}
 	}
 };

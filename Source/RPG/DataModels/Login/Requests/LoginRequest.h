@@ -13,6 +13,7 @@ struct FLoginRequest
 {
 	GENERATED_BODY()
 
+	UPROPERTY()  FString grant_type;
 	UPROPERTY()  FString client_id;
 	UPROPERTY()  FString scope;
 	UPROPERTY()  FString username;

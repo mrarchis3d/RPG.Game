@@ -7,6 +7,8 @@
 #include "EnhancedInputSubsystems.h"
 #include "Blueprint/UserWidget.h"
 #include "GameFramework/Character.h"
+#include "RPG/Characters/HeroCharacter.h"
+#include "RPG/ConfigUtils/Utils.h"
 
 void ARPGPlayerController::BeginPlay()
 {
@@ -53,8 +55,25 @@ void ARPGPlayerController::SetupInputComponent()
 		{
 			PEI->BindAction(InputActions->InputMove, ETriggerEvent::Triggered, this, &ARPGPlayerController::Move);
 			PEI->BindAction(InputActions->JumpAction, ETriggerEvent::Triggered, this, &ARPGPlayerController::Jump);
+			PEI->BindAction(InputActions->OpenInventoryAction, ETriggerEvent::Completed, this, &ARPGPlayerController::OpenInventory);
 		}
 	}
 }
 
+void ARPGPlayerController::OpenInventory()
+{
+	// Obtén una referencia al jugador y al widget del inventario
+	AHeroCharacter* PlayerCharacter = Cast<AHeroCharacter>(GetCharacter());
+	if (PlayerCharacter)
+	{
+		if (UInventoryWidget* InventoryWidget = CreateWidget<UInventoryWidget>(this, InventoryWidgetClass))
+		{
+			if(UInventoryComponent* InventoryComponent = PlayerCharacter->FindComponentByClass<UInventoryComponent>())
+			{
+				InventoryWidget->SetInventoryComponent(InventoryComponent);
+				InventoryWidget->AddToViewport();
+			}
+		}
+	}
+}
 

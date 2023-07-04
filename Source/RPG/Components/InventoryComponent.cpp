@@ -11,50 +11,54 @@ UInventoryComponent::UInventoryComponent()
 	PrimaryComponentTick.bCanEverTick = true;
 
 	// ...
+
+	InventoryItems = GetFakeItems(); 
 }
 
-
-// Called when the game starts
-void UInventoryComponent::BeginPlay()
+void UInventoryComponent::AddItem(UItem* Item, int32 Quantity)
 {
-	Super::BeginPlay();
+}
 
-	// ...
+void UInventoryComponent::RemoveItem(UItem* Item, int32 Quantity)
+{
+}
+
+TArray<UInventoryItem*> UInventoryComponent::GetInventoryItems() const
+{
+	return InventoryItems;
+}
+
+TArray<UInventoryItem*> UInventoryComponent::GetFakeItems() const
+{
+	 TArray<UInventoryItem*> fakeItems;
+
+	UItem* Item1 = NewObject<UItem>();
+	Item1->ItemName = FText::FromString(TEXT("Hammer normal"));
+	FGuid::Parse("919ed59e-16aa-11ee-be56-0242ac120002", Item1->ItemID);
+	Item1->ItemDescription = FText::FromString(TEXT("Tu primera Arma Aventurero"));
+	Item1->MeshPath = FText::FromString(TEXT("path"));
+	Item1->RarityItem = URarityItem::Normal;
+	Item1->IconPath = FText::FromString(TEXT("path icon"));
+	UItem* Item2 = NewObject<UItem>();
+	Item2->ItemName = FText::FromString(TEXT("Hammer good"));
+	FGuid::Parse("8cab74fc-c7fb-476b-becb-418feef1545f", Item2->ItemID);
+	Item2->ItemDescription = FText::FromString(TEXT("Tu primera Arma Mejorada! Aventurero"));
+	Item2->MeshPath = FText::FromString(TEXT("path"));
+	Item2->RarityItem = URarityItem::Good;
+	Item2->IconPath = FText::FromString(TEXT("path icon"));
 	
+
+	// Crea una instancia del objeto UInventoryItem
+	UInventoryItem* InventoryItem1 = NewObject<UInventoryItem>();
+	InventoryItem1->Item = Item1;
+	InventoryItem1->Quantity = 5;
+	
+	UInventoryItem* InventoryItem2 = NewObject<UInventoryItem>();
+	InventoryItem2->Item = Item2;
+	InventoryItem2->Quantity = 2;
+
+	
+	fakeItems.Add(InventoryItem1);
+	fakeItems.Add(InventoryItem2);
+	return  fakeItems;
 }
-
-
-// Called every frame
-void UInventoryComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
-{
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	// ...
-}
-
-void UInventoryComponent::AddItem(AItem* Item)
-{
-	AItem* FoundItem = nullptr;
-
-	for (AItem* ExistingItem : Items)
-	{
-		if (ExistingItem->GetId() == Item->GetId())
-		{
-			FoundItem = ExistingItem;
-			break;
-		}
-	}
-
-	if (FoundItem)
-	{
-		// El ítem ya existe, ajustar la cantidad
-		FoundItem->PlusQuantity(FoundItem->GetQuantity()); // Cambia "SetCantidad()" y "GetCantidad()" por los métodos adecuados para establecer y obtener la cantidad del ítem
-	}
-	else
-	{
-		// El ítem no existe, agregarlo al arreglo
-		Items.Add(Item);
-	}
-}
-
-

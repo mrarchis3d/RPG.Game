@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 #include "RPG/Structs/BaseDamage.h"
 #include "RPG/Structs/BaseHealth.h"
+#include "RPG/Widgets/InventoryWidget.h"
 #include "HeroCharacter.generated.h"
 
 UCLASS(config=Game)

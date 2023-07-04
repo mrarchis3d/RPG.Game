@@ -5,7 +5,8 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "Microsoft/AllowMicrosoftPlatformTypes.h"
-#include "RPG/Actors/Item.h"
+#include "RPG/Domain/Item.h"
+#include "RPG/Domain/InventoryItem.h"
 #include "InventoryComponent.generated.h"
 
 
@@ -14,20 +15,21 @@ class RPG_API UInventoryComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
-public:	
-	// Sets default values for this component's properties
+	public:
 	UInventoryComponent();
+	
+	UFUNCTION(BlueprintCallable, Category = "Inventory")
+	void AddItem(UItem* Item, int32 Quantity);
 
-protected:
-	// Called when the game starts
-	virtual void BeginPlay() override;
-private:
+	UFUNCTION(BlueprintCallable, Category = "Inventory")
+	void RemoveItem(UItem* Item, int32 Quantity);
 
-public:	
-	// Called every frame
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+	UFUNCTION(BlueprintPure, Category = "Inventory")
+	TArray<UInventoryItem*> GetInventoryItems() const;
 
-	void AddItem(AItem* Item);
-	void DropItem();
-	TArray<AItem*> Items;
+	protected:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Inventory")
+	TArray<UInventoryItem*> InventoryItems;
+	
+	TArray<UInventoryItem*> GetFakeItems() const;
 };

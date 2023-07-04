@@ -20,4 +20,6 @@ public:
 	UInputAction* InputMove;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	UInputAction* JumpAction;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	UInputAction* OpenInventoryAction;
 };

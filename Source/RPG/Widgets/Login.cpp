@@ -16,7 +16,7 @@ void ULogin::NativeConstruct()
 {
 	Super::NativeConstruct();
 	if(ExitButton)
-		ExitButton->OnClicked.AddDynamic(this, &ULogin::ULogin::OnClickExit);
+		ExitButton->OnClicked.AddDynamic(this, &ULogin::OnClickExit);
 	if(LoginButton)
 		LoginButton->OnClicked.AddDynamic(this, &ULogin::OnLoginClicked);
 	http= new HttpLibrary();
@@ -59,7 +59,6 @@ void ULogin::OnLoginClicked()
 		TSharedRef<IHttpRequest> Request = http->PostRequestAsFormData("http://localhost:7001/connect/token",  ContentJsonString);
 		Request->OnProcessRequestComplete().BindUObject(this,  &ULogin::LoginResponse);
 		http->Send(Request);
-		print("envio??")
 	}
 }
 

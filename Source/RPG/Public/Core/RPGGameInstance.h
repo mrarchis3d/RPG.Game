@@ -6,6 +6,7 @@
 #include "Engine/GameInstance.h"
 #include "OnlineSubsystem.h"
 #include "Interfaces/OnlineSessionInterface.h"
+#include "Services/HttpLibrary.h"
 #include "UI/MainMenuWidget.h"
 #include "UI/MenuInterface.h"
 #include "RPGGameInstance.generated.h"
@@ -21,18 +22,42 @@ UCLASS()
 class RPG_API URPGGameInstance : public UGameInstance, public IMenuInterface
 {
 	GENERATED_BODY()
-
+	
+	void GetCharactersResponse(FHttpRequestPtr Request,  FHttpResponsePtr Response, bool bWasSuccessful);
+	HttpLibrary* http = nullptr;
+	
 public:
 	virtual  void Init() override;
 
 	/////////////////
 	///Menu Interface
-
+	virtual HttpLibrary* GetHttp() 
+	{
+		return http;
+	}
 	virtual void Join(const FServerData& InServerData) override;
 	virtual void StartGame() override;
 	virtual void LoadMainMenu() override;
 	virtual void LoadLoginMenu() override;
 
+	/////
+	///HTTP
+
+	void SetAuthorize(FString Authorization)
+	{
+		if(http != nullptr)
+		{
+			http->SetAthorization(Authorization);
+		}
+	}
+
+	FString GetAuthorize()
+	{
+		if(http != nullptr)
+		{
+			return http->GetAuthorization();
+		}return "";
+	}
 
 	////////////////
 	///UI Creation
@@ -57,6 +82,13 @@ public:
 	// UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="RPGGameInstance|UI")
 	// TSubclassOf<UMainMenu> RPGHUDClass;
 
+
+	////
+	///Load Characters in CharacterLevel
+	
+	UFUNCTION(BlueprintCallable, Category="RPGGameInstance|GetCharacters")
+	void GetCharacters();
+
 protected:
     ///DElegates funcions
     //
@@ -70,4 +102,5 @@ protected:
 	IOnlineSessionPtr SessionInterface;
 	TSharedPtr<FOnlineSessionSearch> SessionSearch;
 	UMainMenuWidget* MainMenu;
+	
 };

@@ -17,7 +17,9 @@ class UMenuInterface: public UInterface
 class RPG_API IMenuInterface
 {
 	GENERATED_BODY()
+
 public:
+
 	virtual void Join(const FServerData& InServerData) =0;
 	virtual void StartGame() =0;
 	virtual void LoadMainMenu()=0;

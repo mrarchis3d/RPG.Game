@@ -2,9 +2,13 @@
 
 
 #include "Core/RPGGameInstance.h"
+
+#include "JsonObjectConverter.h"
 #include "OnlineSubsystem.h"
+#include "DataModels/Character/Responses/GetCharactersByUserId.h"
 #include "Engine/Engine.h"
 #include "GameFramework/GameUserSettings.h"
+#include "Interfaces/IHttpRequest.h"
 #include "UI/MainMenuWidget.h"
 
 DEFINE_LOG_CATEGORY(RPGGame)
@@ -24,6 +28,10 @@ void URPGGameInstance::Init()
 			UserSettings->ApplySettings(false);
 		}
 	}
+	// Initialize http
+
+	http= new HttpLibrary();
+
 	// Initialize online System
 	IOnlineSubsystem* Subsystem = IOnlineSubsystem::Get();
 	if(Subsystem)
@@ -80,6 +88,29 @@ void URPGGameInstance::LoadGameHUDWidget()
 
 void URPGGameInstance::LoadInGameLoadMenuWidget()
 {
+}
+
+void URPGGameInstance::GetCharacters()
+{
+	FString ContentJsonString;
+	TSharedRef<IHttpRequest> Request = http->GetRequest("http://localhost:7002/api/v1/character");
+	Request->OnProcessRequestComplete().BindUObject(this,  &URPGGameInstance::GetCharactersResponse);
+	http->Send(Request);
+}
+
+void URPGGameInstance::GetCharactersResponse(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful)
+{
+	if(http->ResponseIsValid(Response, bWasSuccessful))
+	{
+		FGetCharactersByUserId GetCharactersResponse;
+		FString JsonString = Response->GetContentAsString();
+		//FJsonObjectConverter::JsonObjectStringToUStruct<FGetCharactersByUserId>(  JsonString, &GetCharactersResponse, 0, 0);
+		printf("Response: %s", *JsonString);
+	}else
+	{
+		printf("Error: %i", Response->GetResponseCode());
+		print("Error: "+Response->GetContentAsString());
+	}
 }
 
 void URPGGameInstance::OnCreateSessionComplete(const FName SessionName, bool bSuccess)

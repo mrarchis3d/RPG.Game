@@ -9,9 +9,19 @@
 
 class HttpLibrary
 {
+	FString Authorization="";
 public:
 
-	FString Authorization="";
+	void  SetAthorization(FString NewAuthorization)
+	{
+		Authorization = NewAuthorization;
+	}
+
+	FString GetAuthorization()
+	{
+		return Authorization;
+	}
+
 	TSharedRef<IHttpRequest> RequestWithRoute(FString  route, bool IsForm = false)
 	{
 		FHttpModule* Http = &FHttpModule::Get();

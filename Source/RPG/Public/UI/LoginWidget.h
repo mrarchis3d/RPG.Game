@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "BaseSubMenuWidget.h"
 #include "Blueprint/UserWidget.h"
+#include "Core/RPGGameInstance.h"
 #include "Interfaces/IHttpRequest.h"
 #include "Services/HttpLibrary.h"
 #include "LoginWidget.generated.h"
@@ -19,8 +20,7 @@ class RPG_API ULoginWidget : public UBaseSubMenuWidget
 	GENERATED_BODY()
 private:
 	UPROPERTY()
-	UGameInstance* GameInstance;
-	HttpLibrary* http;
+	URPGGameInstance* GameInstance;
 	virtual bool Initialize() override;
 	void LoginResponse(FHttpRequestPtr Request,  FHttpResponsePtr Response, bool bWasSuccessful);
 

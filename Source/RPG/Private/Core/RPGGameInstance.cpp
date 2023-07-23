@@ -102,10 +102,9 @@ void URPGGameInstance::GetCharactersResponse(FHttpRequestPtr Request, FHttpRespo
 {
 	if(http->ResponseIsValid(Response, bWasSuccessful))
 	{
-		FGetCharactersByUserId GetCharactersResponse;
 		FString JsonString = Response->GetContentAsString();
-		//FJsonObjectConverter::JsonObjectStringToUStruct<FGetCharactersByUserId>(  JsonString, &GetCharactersResponse, 0, 0);
-		printf("Response: %s", *JsonString);
+		printf("Characters: %s",*JsonString);
+		TArray<FGetCharactersByUserId> Characters = http->ConvertirJsonAUStructArray<FGetCharactersByUserId>(JsonString);
 	}else
 	{
 		printf("Error: %i", Response->GetResponseCode());

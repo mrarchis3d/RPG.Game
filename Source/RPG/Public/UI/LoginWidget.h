@@ -34,6 +34,12 @@ public:
 	UPROPERTY(meta = (BindWidget))
 	class UButton* LoginButton;
 
+	UPROPERTY(meta = (BindWidget))
+	class UTextBlock* ErrorMessage;
+	
+	UPROPERTY(meta = (BindWidget))
+	class UWidget* LoadingWidget;
+
 	UFUNCTION()
 	void OnLoginClicked();
 

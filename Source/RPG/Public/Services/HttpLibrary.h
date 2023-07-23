@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "HttpModule.h"
+#include "JsonUtilities.h"
 #include "ConfigUtils/Utils.h"
 #include "ImageDownload/Public/WebImage.h"
 
@@ -21,6 +22,45 @@ public:
 	{
 		return Authorization;
 	}
+	
+	template<typename T>
+	TArray<T> ConvertirJsonAUStructArray(const FString& JsonString)
+	{
+		TArray<T> ResultArray;
+		TArray<TSharedPtr<FJsonValue>> JsonArray;
+
+		// Convertir el JSON en un array de valores JSON
+		TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(JsonString);
+		if (FJsonSerializer::Deserialize(Reader, JsonArray))
+		{
+			// Iterar sobre el array de valores JSON y convertir cada elemento al UStruct deseado
+			for (const TSharedPtr<FJsonValue>& JsonValue : JsonArray)
+			{
+				T Item;
+				if (FJsonObjectConverter::JsonObjectToUStruct(JsonValue->AsObject().ToSharedRef(), T::StaticStruct(), &Item, 0, 0))
+				{
+					// Agregar el elemento convertido al TArray
+					ResultArray.Add(Item);
+				}
+				else
+				{
+					UE_LOG(LogTemp, Error, TEXT("Error al convertir el elemento del JSON a la estructura."));
+				}
+			}
+
+			if (ResultArray.Num() == 0)
+			{
+				UE_LOG(LogTemp, Warning, TEXT("El JSON no contiene elementos válidos."));
+			}
+		}
+		else
+		{
+			UE_LOG(LogTemp, Error, TEXT("Error al convertir el JSON a un array de valores JSON."));
+		}
+
+		return ResultArray;
+	}
+
 
 	TSharedRef<IHttpRequest> RequestWithRoute(FString  route, bool IsForm = false)
 	{
@@ -65,7 +105,7 @@ public:
 
 	bool ResponseIsValid(FHttpResponsePtr Response, bool bWasSuccessful)
 	{
-		if ((!bWasSuccessful) || (!Response.IsValid()))
+		if (!bWasSuccessful || !Response.IsValid())
 		{
 			UE_LOG(LogTemp, Warning, TEXT("Http Response returned error code:  %d"), Response->GetResponseCode());
 			return false;
@@ -96,13 +136,8 @@ public:
 				FormData += FString::Printf(TEXT("%s=%s"), *Key, *Value);
 				bFirstEntry = false;
 			}
-			printf("FormData Result: %s", *FormData);
 			return FormData;
 		}
-		else
-		{
-			print("Failed to convert");
-			return "";
-		}
+		return "";
 	}
 };

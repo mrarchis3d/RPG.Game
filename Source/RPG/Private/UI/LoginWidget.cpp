@@ -8,13 +8,19 @@
 #include "Services/HttpLibrary.h"
 #include "Components/Button.h"
 #include "Components/EditableTextBox.h"
+#include "Components/TextBlock.h"
 #include "Core/RPGGameInstance.h"
 #include "DataModels/Login/Requests/LoginRequest.h"
+#include "DataModels/Login/Responses/LoginErrorResponse.h"
 #include "DataModels/Login/Responses/LoginResponse.h"
 
 bool ULoginWidget::Initialize()
 {
 	const bool bIsSuccess = Super::Initialize();
+	if(!ensure(LoadingWidget)) return false;
+	LoadingWidget->SetVisibility(ESlateVisibility::Hidden);
+	if(!ensure(ErrorMessage)) return false;
+	ErrorMessage->SetVisibility(ESlateVisibility::Hidden);
 	if(!ensure(ExitButton)) return false; //|| !ensure(WidgetSwitcher))  return false;
 	ExitButton->OnClicked.AddDynamic(this, &ULoginWidget::ExitPressed);
 	if(!ensure(LoginButton)) return false;
@@ -29,15 +35,33 @@ void ULoginWidget::LoginResponse(FHttpRequestPtr Request, FHttpResponsePtr Respo
 	if(GameInstance->GetHttp()->ResponseIsValid(Response, bWasSuccessful))
 	{
 		FLoginResponse LoginResponse;
+		FLoginErrorResponse LoginErrorResponse;
 		FString JsonString = Response->GetContentAsString();
-		FJsonObjectConverter::JsonObjectStringToUStruct<FLoginResponse>(  JsonString, &LoginResponse, 0, 0);
-		GameInstance->SetAuthorize(LoginResponse.access_token);
-		printf("Token: %s", *GameInstance->GetAuthorize());
-
-		GameInstance->GetCharacters();
-		print("GetCharacters");
+		if(FJsonObjectConverter::JsonObjectStringToUStruct<FLoginResponse>(JsonString, &LoginResponse, 0, 0))
+		{
+			if(LoginResponse.access_token.IsEmpty())
+			{
+				if( FJsonObjectConverter::JsonObjectStringToUStruct<FLoginErrorResponse>(JsonString, &LoginErrorResponse, 0, 0))
+				{
+					LoadingWidget->SetVisibility(ESlateVisibility::Hidden);
+					ErrorMessage->SetText(FText::FromString(LoginErrorResponse.error_description));
+					ErrorMessage->SetVisibility(ESlateVisibility::Visible);
+				}
+			}else
+			{
+				GameInstance->SetAuthorize(LoginResponse.access_token);
+				GameInstance->GetCharacters();
+			}
+		}else
+		{
+			ErrorMessage->SetText(FText::FromString("General Error"));
+			ErrorMessage->SetVisibility(ESlateVisibility::Visible);
+		}
 	}else
 	{
+		LoadingWidget->SetVisibility(ESlateVisibility::Hidden);
+		ErrorMessage->SetText(FText::FromString("We are in maintenance"));
+		ErrorMessage->SetVisibility(ESlateVisibility::Visible);
 		printf("Error: %i", Response->GetResponseCode());
 		print("Error: "+Response->GetContentAsString());
 	}
@@ -50,6 +74,7 @@ void ULoginWidget::OnLoginClicked()
 		!UsernameField->GetText().ToString().IsEmpty() &&
 		!PasswordField->GetText().ToString().IsEmpty())
 	{
+		LoadingWidget->SetVisibility(ESlateVisibility::Visible);
 		FLoginRequest LoginCredentials;
 		LoginCredentials.client_id = "unrealdesktop";
 		LoginCredentials.grant_type = "password";
